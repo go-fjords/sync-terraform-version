@@ -7,8 +7,26 @@ inputs:
   service-account-key:
     description: 'Google Cloud Service Account Key'
     required: true
-  docker-repo-prefix:
-    description: 'Docker Image Repo Prefix'
+  gcloud-project-id:
+    description: 'Google Cloud Project Id'
+    required: true
+  gcloud-artifact-region:
+    description: 'Region for Google Cloud Artifact'
+    required: true
+  gcloud-artifact-project:
+    description: 'Project for Google Cloud Artifact'
+    required: true
+  gcloud-artifact-repository:
+    description: 'Repository for Google Cloud Artifact'
+    required: true
+  service-name:
+    description: 'Service Name, must match Google Cloud Artifact Service Name'
+    required: true
+  environment:
+    description: 'Environment to update'
+    required: true
+  file-path:
+    description: 'Path to terraform file'
     required: true
 runs:
   using: "composite"
@@ -21,20 +39,20 @@ runs:
     - uses: google-github-actions/setup-gcloud@master
       with:
         service_account_key: ${{ inputs.service-account-key }}
-        project_id: ${{ env.PROJECT_ID }}
+        project_id: ${{ inputs.gcloud-project-id }}
         export_default_credentials: true
     - uses: go-fjords/replace-environment-image-digest@v1
       name: Replace Terraform Version
       with:
-        image: ${{ inputs.docker-repo-prefix }}/${{ env.OPERATIONS_PROJECT_ID }}/${{ env.DOCKER_REPO }}/${{ env.SERVICE_NAME }}
+        image: ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.service-name }}
         tag: ${{ github.sha }}
-        environment: ${{ env.ENVIRONMENT }}
-        path: ${{ env.TERRAFORM_PATH }}
+        environment: ${{ inputs.environment }}
+        path: ${{ inputs.file-path }}
     - uses: EndBug/add-and-commit@v7
       with:
-        add: ${{ env.TERRAFORM_PATH }}
+        add: ${{ inputs.file-path }}
         author_name: Tech@GoFjords
         author_email: tech@gofjords.com
         default_author: github_actions
-        message: Updated ${{ env.ENVIRONMENT }} version for ${{ env.SERVICE_NAME }} [skip actions]
+        message: Updated ${{ inputs.environment }} version for ${{ inputs.service-name }} [skip actions]
         push: true
