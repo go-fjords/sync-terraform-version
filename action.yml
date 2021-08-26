@@ -19,6 +19,9 @@ inputs:
   gcloud-artifact-repository:
     description: 'Repository for Google Cloud Artifact'
     required: true
+  gcloud-artifact-image:
+    description: 'Artifact Image name for Google Cloud Artifact'
+    required: true
   service-name:
     description: 'Service Name, must match Google Cloud Artifact Service Name'
     required: true
@@ -47,7 +50,7 @@ runs:
     - uses: go-fjords/replace-environment-image-digest@v1
       name: Replace Terraform Version
       with:
-        image: ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.service-name }}
+        image: ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.gcloud-artifact-image }}
         tag: ${{ inputs.tag }}
         environment: ${{ inputs.environment }}
         path: ${{ inputs.file-path }}
