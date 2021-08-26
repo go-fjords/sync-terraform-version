@@ -7,6 +7,9 @@ inputs:
   service-account-key:
     description: 'Google Cloud Service Account Key'
     required: true
+  docker-repo-prefix:
+    description: 'Docker Image Repo Prefix'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -23,7 +26,7 @@ runs:
     - uses: go-fjords/replace-environment-image-digest@v1
       name: Replace Terraform Version
       with:
-        image: europe-west1-docker.pkg.dev/${{ env.OPERATIONS_PROJECT_ID }}/${{ env.DOCKER_REPO }}/${{ env.SERVICE_NAME }}
+        image: ${{ inputs.docker-repo-prefix }}/${{ env.OPERATIONS_PROJECT_ID }}/${{ env.DOCKER_REPO }}/${{ env.SERVICE_NAME }}
         tag: ${{ github.sha }}
         environment: ${{ env.ENVIRONMENT }}
         path: ${{ env.TERRAFORM_PATH }}
