@@ -1,0 +1,37 @@
+name: 'Sync Version To Terraform'
+description: 'Syncs the version of a deployed image to the operations repository'
+inputs:
+  token-private-repos:
+    description: 'Github PAT to access private repos'
+    required: true
+  service-account-key:
+    description: 'Google Cloud Service Account Key'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: 'go-fjords/operation'
+        ref: 'main'
+        token: ${{ inputs.token-private-repos }}
+    - uses: google-github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ inputs.service-account-key }}
+        project_id: ${{ env.PROJECT_ID }}
+        export_default_credentials: true
+    - uses: go-fjords/replace-environment-image-digest@v1
+      name: Replace Terraform Version
+      with:
+        image: europe-west1-docker.pkg.dev/${{ env.OPERATIONS_PROJECT_ID }}/${{ env.DOCKER_REPO }}/${{ env.SERVICE_NAME }}
+        tag: ${{ github.sha }}
+        environment: ${{ env.ENVIRONMENT }}
+        path: ${{ env.TERRAFORM_PATH }}
+    - uses: EndBug/add-and-commit@v7
+      with:
+        add: ${{ env.TERRAFORM_PATH }}
+        author_name: Tech@GoFjords
+        author_email: tech@gofjords.com
+        default_author: github_actions
+        message: Updated ${{ env.ENVIRONMENT }} version for ${{ env.SERVICE_NAME }} [skip actions]
+        push: true
