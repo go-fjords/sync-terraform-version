@@ -28,6 +28,9 @@ inputs:
   file-path:
     description: 'Path to terraform file'
     required: true
+  tag:
+    description: 'Docker Image tag to sync'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -45,7 +48,7 @@ runs:
       name: Replace Terraform Version
       with:
         image: ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.service-name }}
-        tag: ${{ github.sha }}
+        tag: ${{ inputs.tag }}
         environment: ${{ inputs.environment }}
         path: ${{ inputs.file-path }}
     - uses: EndBug/add-and-commit@v7
