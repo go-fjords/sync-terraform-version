@@ -68,6 +68,3 @@ runs:
         default_author: github_actions
         message: Updated ${{ inputs.environment }} version for ${{ inputs.service-name }} [skip actions]
         push: true
-    - name: Fail if version was not pushed
-      run: if ${{ steps.commit-version-change.outputs.pushed }}; then; else exit 1; fi;
-      shell: bash
