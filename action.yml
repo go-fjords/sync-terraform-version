@@ -53,13 +53,14 @@ runs:
         export DOCKER_IMAGE_DIGEST=$(gcloud artifacts docker images list ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.gcloud-artifact-image }} --format='value(version)' --include-tags --filter tags~${{ inputs.tag }})
         echo "::set-output name=DOCKER_IMAGE_DIGEST::$DOCKER_IMAGE_DIGEST"
       shell: bash
-    - name: Update digest in ${{ inputs.file-path }} for ${{ inputs.environment }}
-      run: |
+    - run: |
+        echo "Update '${{ inputs.environment }}' in '${{ inputs.file-path }}' with digest '$DOCKER_IMAGE_DIGEST'"
         sed -ie "s/${{ inputs.environment }}\(\s*\)= \"sha256:[a-z0-9]*\"/${{ inputs.environment }}\1= \"$DOCKER_IMAGE_DIGEST\"/" ${{ inputs.file-path }}
       shell: bash
       env:
         DOCKER_IMAGE_DIGEST: ${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}
     - uses: EndBug/add-and-commit@v7
+      id: commit-version-change
       with:
         add: ${{ inputs.file-path }}
         author_name: Tech@GoFjords
@@ -67,3 +68,10 @@ runs:
         default_author: github_actions
         message: Updated ${{ inputs.environment }} version for ${{ inputs.service-name }} [skip actions]
         push: true
+    - name: Fail if version was not pushed
+      if: !steps.commit-version-change.outputs.pushed
+      run: exit 1
+      shell: bash
+
+
+      gcloud artifacts docker images list europe-west1-docker.pkg.dev/operations-321911/go-fjords-docker/admin-api --format='value(version)' --include-tags --filter tags~latest
