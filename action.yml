@@ -48,11 +48,11 @@ runs:
         project_id: ${{ inputs.gcloud-project-id }}
         export_default_credentials: true
     - name: Get Docker Image Digest
-        id: get-docker-image-digest
-        run: |
-          export DOCKER_IMAGE_DIGEST=$(gcloud artifacts docker images list ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.gcloud-artifact-image }} --format='value(version)' --include-tags --filter tags~${{ inputs.tag }})
-          echo "::set-output name=DOCKER_IMAGE_DIGEST::$DOCKER_IMAGE_DIGEST"
-        shell: bash
+      id: get-docker-image-digest
+      run: |
+        export DOCKER_IMAGE_DIGEST=$(gcloud artifacts docker images list ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.gcloud-artifact-image }} --format='value(version)' --include-tags --filter tags~${{ inputs.tag }})
+        echo "::set-output name=DOCKER_IMAGE_DIGEST::$DOCKER_IMAGE_DIGEST"
+      shell: bash
     - name: Update digest in ${{ inputs.file-path }} for ${{ inputs.environment }}
       run: |
         sed -ie "s/${{ inputs.environment }}\(\s*\)= \"sha256:[a-z0-9]*\"/${{ inputs.environment }}\1= \"$DOCKER_IMAGE_DIGEST\"/" ${{ inputs.file-path }}
