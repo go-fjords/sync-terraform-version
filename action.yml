@@ -47,13 +47,18 @@ runs:
         service_account_key: ${{ inputs.service-account-key }}
         project_id: ${{ inputs.gcloud-project-id }}
         export_default_credentials: true
-    - uses: go-fjords/replace-environment-image-digest@v1
-      name: Replace Terraform Version
-      with:
-        image: ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.gcloud-artifact-image }}
-        tag: ${{ inputs.tag }}
-        environment: ${{ inputs.environment }}
-        path: ${{ inputs.file-path }}
+    - name: Get Docker Image Digest
+        id: get-docker-image-digest
+        run: |
+          export DOCKER_IMAGE_DIGEST=$(gcloud artifacts docker images list ${{ inputs.gcloud-artifact-region }}-docker.pkg.dev/${{ inputs.gcloud-artifact-project }}/${{ inputs.gcloud-artifact-repository }}/${{ inputs.gcloud-artifact-image }} --format='value(version)' --include-tags --filter tags~${{ inputs.tag }})
+          echo "::set-output name=DOCKER_IMAGE_DIGEST::$DOCKER_IMAGE_DIGEST"
+        shell: bash
+    - name: Update digest in ${{ inputs.file-path }} for ${{ inputs.environment }}
+      run: |
+        sed -ie "s/${{ inputs.environment }}\(\s*\)= \"sha256:[a-z0-9]*\"/${{ inputs.environment }}\1= \"$DOCKER_IMAGE_DIGEST\"/" ${{ inputs.file-path }}
+      shell: bash
+      env:
+        DOCKER_IMAGE_DIGEST: ${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}
     - uses: EndBug/add-and-commit@v7
       with:
         add: ${{ inputs.file-path }}
