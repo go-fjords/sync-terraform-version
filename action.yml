@@ -74,4 +74,4 @@ runs:
       shell: bash
 
 
-      gcloud artifacts docker images list europe-west1-docker.pkg.dev/operations-321911/go-fjords-docker/admin-api --format='value(version)' --include-tags --filter tags~latest
+git tag -d v1 && git push --delete origin v1 && git tag v1 && git push origin main v1
