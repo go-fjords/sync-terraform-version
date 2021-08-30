@@ -69,6 +69,5 @@ runs:
         message: Updated ${{ inputs.environment }} version for ${{ inputs.service-name }} [skip actions]
         push: true
     - name: Fail if version was not pushed
-      if: ${{ !steps.commit-version-change.outputs.pushed }}
-      run: exit 1
+      run: if ${{ steps.commit-version-change.outputs.pushed }}; then; else exit 1; fi;
       shell: bash
