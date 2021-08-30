@@ -69,9 +69,6 @@ runs:
         message: Updated ${{ inputs.environment }} version for ${{ inputs.service-name }} [skip actions]
         push: true
     - name: Fail if version was not pushed
-      if: !steps.commit-version-change.outputs.pushed
+      if: ${{ !steps.commit-version-change.outputs.pushed }}
       run: exit 1
       shell: bash
-
-
-git tag -d v1 && git push --delete origin v1 && git tag v1 && git push origin main v1
