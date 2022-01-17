@@ -4,9 +4,6 @@ inputs:
   token-private-repos:
     description: 'Github PAT to access private repos'
     required: true
-  service-account-key:
-    description: 'Google Cloud Service Account Key'
-    required: true
   gcloud-project-id:
     description: 'Google Cloud Project Id'
     required: true
@@ -22,6 +19,12 @@ inputs:
   gcloud-artifact-image:
     description: 'Artifact Image name for Google Cloud Artifact'
     required: true
+  gcloud-workload-identity-provider:
+    required: true
+    description: 'GCloud Identity Provider id to use for federated authentication'
+  gcloud-service-account:
+    required: true
+    description: 'GCloud Service Account to authenticate as, e.g. github-actions@...'
   service-name:
     description: 'Service Name, must match Google Cloud Artifact Service Name'
     required: true
@@ -42,11 +45,13 @@ runs:
         repository: 'go-fjords/operation'
         ref: 'main'
         token: ${{ inputs.token-private-repos }}
-    - uses: google-github-actions/setup-gcloud@master
+    - name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
       with:
-        service_account_key: ${{ inputs.service-account-key }}
-        project_id: ${{ inputs.gcloud-project-id }}
-        export_default_credentials: true
+        workload_identity_provider: ${{ inputs.gcloud-workload-identity-provider }}
+        service_account: ${{ inputs.gcloud-service-account }}
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v0'
     - name: Get Docker Image Digest
       id: get-docker-image-digest
       run: |
