@@ -2,16 +2,23 @@
 Github Action for syncing the terraform version to the operation repo
 
 
-# Tagging
+## Development
 
-### Create the tag:
+### Releasing
 
-`git tag {version}`. Example `git tag v1`
+#### Create release
 
-### Push the tag:
+Each release has its own Git *tag*. Do these steps to create a new release:
 
-`git push origin {version}`. Example `git push origin v1`
+1. Create the tag: `git tag <version>`
+1. Push the tag to origin: `git push origin <version>`
 
-### Deleting a tag
 
-`git push origin --delete {version}`. Example `git push origin --delete v1`
+#### Update release
+
+Because the release now is tagged to a specific commit, if you want to update the release, the tag has to be destroyed and re-created:
+
+1. Delete the tag: `git push origin --delete <version>`
+1. Delete the local tag `git tag -d <version>`
+3. Create the tag again: `git tag <version>`
+4. Push the tag to origin: `git push origin <version>`
