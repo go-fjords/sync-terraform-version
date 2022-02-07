@@ -81,7 +81,6 @@ runs:
         token: ${{ inputs.token-private-repos }}
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
-      if: ${{ always() && steps.update-version.outcome == 'success' }}
       with:
         token: ${{ inputs.token-private-repos }}
         branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
