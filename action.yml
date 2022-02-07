@@ -69,12 +69,14 @@ runs:
       id: find-pull-request
       with:
         branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
+        github-token: ${{ inputs.token-private-repos }}
     - name: Close Pull
       uses: peter-evans/close-pull@v1
       with:
         pull-request-number: ${{ steps.find-pull-request.outputs.number }}
         comment: New PR for this service and environment was created
         delete-branch: true
+        token: ${{ inputs.token-private-repos }}
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
