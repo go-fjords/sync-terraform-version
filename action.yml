@@ -64,12 +64,23 @@ runs:
       shell: bash
       env:
         DOCKER_IMAGE_DIGEST: ${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}
-    - uses: EndBug/add-and-commit@v7
-      id: commit-version-change
+    - name: Find Pull Request
+      uses: juliangruber/find-pull-request-action@v1
+      id: find-pull-request
       with:
-        add: ${{ inputs.file-path }}
-        author_name: Tech@GoFjords
-        author_email: tech@gofjords.com
-        default_author: github_actions
-        message: Updated ${{ inputs.environment }} version for ${{ inputs.service-name }} [skip actions]
-        push: true
+        branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
+    - name: Close Pull
+      uses: peter-evans/close-pull@v1
+      with:
+        pull-request-number: ${{ steps.find-pull-request.outputs.number }}
+        comment: New PR for this service and environment was created
+        delete-branch: true
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ inputs.token-private-repos }}
+        branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
+        title: Update SHA for ${{ inputs.gcloud-artifact-image }} in ${{ inputs.environment }}
+        body: Updating `${{ inputs.environment }}` version in `${{ inputs.file-path }}` with `${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}`
+        labels: auto-version
+        delete-branch: true
