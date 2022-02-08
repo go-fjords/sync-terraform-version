@@ -67,18 +67,11 @@ runs:
         DOCKER_IMAGE_DIGEST: ${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
-      id: create-pull-request
       with:
         token: ${{ inputs.token-private-repos }}
         branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
         title: Update ${{ inputs.environment }} for ${{ inputs.gcloud-artifact-image }}
         body: Updating `${{ inputs.environment }}` version in `${{ inputs.file-path }}` with `${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}`
+        labels: automerge
         add-paths: ${{ inputs.file-path }}
         delete-branch: true
-    - name: Add Label
-      uses: actions-ecosystem/action-add-labels@v1
-      with:
-        github_token: ${{ inputs.token-private-repos }}
-        labels: automerge
-        number: ${{ steps.create-pull-request.outputs.pull-request-number }}
-        repo: go-fjords/operation
