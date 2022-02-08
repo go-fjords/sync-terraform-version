@@ -69,7 +69,7 @@ runs:
       run: |
         git config user.name 'go-fjords-tech'
         git config user.email 'go-fjords-tech@users.noreply.github.com'
-        git commit ${{ inputs.file-path }} -m "Update ${{ inputs.environment }} for ${{ inputs.gcloud-artifact-image }}" -m "Updating \`${{ inputs.environment }}\` version in \`${{ inputs.file-path }}\` with \`${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}\`"
+        git commit ${{ inputs.file-path }} -m "Update ${{ inputs.environment }} for ${{ inputs.gcloud-artifact-image }}" -m "Updating \`${{ inputs.environment }}\` version in \`${{ inputs.file-path }}\` with \`${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}\`" --no-verify
         git stash
       shell: bash
     - name: Create Pull Request
