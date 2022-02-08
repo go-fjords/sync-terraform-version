@@ -72,6 +72,7 @@ runs:
         git add ${{ inputs.file-path }}
         git commit -m "Update ${{ inputs.environment }} for ${{ inputs.gcloud-artifact-image }}" -m "Updating \`${{ inputs.environment }}\` version in \`${{ inputs.file-path }}\` with \`${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}\`" || true
         git stash
+        git clean -fd
       shell: bash
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
@@ -79,4 +80,3 @@ runs:
         token: ${{ inputs.token-private-repos }}
         branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
         labels: automerge
-        delete-branch: true
