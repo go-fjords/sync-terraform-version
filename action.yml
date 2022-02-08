@@ -81,3 +81,4 @@ runs:
         github_token: ${{ inputs.token-private-repos }}
         labels: automerge
         number: ${{ steps.cpr.outputs.pull-request-number }}
+        repo: go-fjords/operation
