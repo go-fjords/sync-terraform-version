@@ -70,8 +70,8 @@ runs:
       with:
         token: ${{ inputs.token-private-repos }}
         branch: auto-update-version/${{ inputs.gcloud-artifact-image }}-${{ inputs.environment }}
-        title: Update SHA for ${{ inputs.gcloud-artifact-image }} in ${{ inputs.environment }}
+        title: Update ${{ inputs.environment }} for ${{ inputs.gcloud-artifact-image }}
         body: Updating `${{ inputs.environment }}` version in `${{ inputs.file-path }}` with `${{ steps.get-docker-image-digest.outputs.DOCKER_IMAGE_DIGEST}}`
-        labels: auto-version
+        labels: automerge
         add-paths: ${{ inputs.file-path }}
         delete-branch: true
