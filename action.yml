@@ -37,7 +37,7 @@ runs:
         git config user.name 'go-fjords-tech'
         git config user.email 'go-fjords-tech@users.noreply.github.com'
         git add ${{ inputs.file-path }}
-        git commit -m "Update ${{ inputs.environment }} for ${{ inputs.service-name }}" -m "Updating \`${{ inputs.environment }}\` version in \`${{ inputs.file-path }}\` with \`${{ inputs.docker-image-digest }}\`" || true
+        git commit -m "Update ${{ inputs.environment }} for ${{ inputs.service-name }} [skip actions]" -m "Updating \`${{ inputs.environment }}\` version in \`${{ inputs.file-path }}\` with \`${{ inputs.docker-image-digest }}\`" || true
         git push
       shell: bash
     - uses: peter-evans/rebase@v1
